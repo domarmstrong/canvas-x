@@ -1,68 +1,53 @@
-var util = require('../util');
-var base = require('./base');
-var mixins = require('./mixins');
-module.exports = {};
+module mixins from './mixins';
+module util from '../util';
+import { Base } from './base';
 
-function Rect(props) {
-    this.init.apply(this, arguments);
-}
-util.inherit(base.Base, Rect, {
-    init: function init(props) {
-        this.super(base.Base, 'init', props);
-    },
-    shape: 'rect',
-    draw: function draw(page, cx) {
-        this.super(base.Base, 'draw', page, cx);
+export class Rect extends Base {
+    constructor(props) {
+        super(props);
+        this.shape = 'rect';
+    }
+    
+    draw(page, cx) {
+        super.draw(page, cx);
         if (! this.state.background) return;
         var _ = this.state;
         cx.fillStyle = this.state.background;
         cx.fillRect(this.x(_.x), this.y(_.y), this.w(), this.h());
-    },
-});
-mixins.mouseEvents(Rect);
-module.exports.Rect = Rect;
-
-function Rect(props) {
-    this.init.apply(this, arguments);
+    }
 }
-util.inherit(base.Base, Rect, {
-    init: function init(props) {
-        this.super(base.Base, 'init', props);
-    },
-    shape: 'rect',
-    draw: function draw(page, cx) {
-        this.super(base.Base, 'draw', page, cx);
-        if (! this.state.background) return;
-        var _ = this.state;
-        cx.fillStyle = this.state.background;
-        cx.fillRect(this.x(_.x), this.y(_.y), this.w(), this.h());
-    },
-});
-mixins.mouseEvents(Rect);
-module.exports.Rect = Rect;
+util.mixin(mixins.mouseEvents, Rect);
 
-
-function Text(props) {
-    this.init.apply(this, arguments);
+export class Bound extends Rect {
+    constructor(props, children) {
+        super(props, children);
+        this.children = children || [];
+    }
+    draw(page, cx) {
+        super(page, cx);
+        this.drawChildren(page, cx);
+    }
 }
-util.inherit(base.Base, Text, {
-    init: function init(props) {
-        this.super(base.Base, 'init', props);
-    },
-    defaults: {
-        fontSize: '18px',
-        fontWeight: 'bold',
-        fontFamily: 'sans-serif',
-        textAlign: 'center',
-        textBaseline: 'middle',
-        fillStyle: '#000000'
-    },
-    getFont: function () {
+util.mixin(mixins.children, Bound);
+
+export class Text extends Base {
+    constructor(props) {
+        this.defaults = {
+            fontSize: '18px',
+            fontWeight: 'bold',
+            fontFamily: 'sans-serif',
+            textAlign: 'center',
+            textBaseline: 'middle',
+            fillStyle: '#000000'
+        };
+        super(props);
+    }
+    getFont() {
         var s = this.state;
         return s.fontWeight + ' ' + s.fontSize + ' ' + s.fontFamily;
-    },
-    draw: function draw(page, cx) {
-        this.super(base.Base, 'draw', page, cx);
+    }
+    draw(page, cx) {
+        this.super(x.ui.Base, 'draw', page, cx);
         var s = this.state;
         if (!s.text) return;
         var _ = this.bound.state;
@@ -72,8 +57,7 @@ util.inherit(base.Base, Text, {
         cx.fillStyle = this.state.color;
         cx.fillText(s.text, this.x() + (this.w() / 2), this.y() + (this.h() / 2));
     }
-});
-module.exports.Text = Text;
+}
 
 function similar(a, b) {
     var similar = true;
@@ -89,21 +73,18 @@ function similar(a, b) {
     return similar;
 }
 
-function Grid(props) {
-    this.init.apply(this, arguments);
-}
-util.inherit(Rect, Grid, {
-    init: function init(props) {
-        this.super(Rect, 'init', props);
+export class Grid extends Rect {
+    constructor(props) {
+        this.defaults = {
+            strokeStyle: '#FF0000',
+            lineWidth: 1,
+            size: 20
+        };
+        super(props);
         this.square = null;
         this.lastSquare = null;
-    },
-    defaults: {
-        strokeStyle: '#FF0000',
-        lineWidth: 1,
-        size: 20
-    },
-    mousemove: function mousemove(event) {
+    }
+    mousemove(event) {
         if (this.props.mousemove) {
             this.props.mousemove(event);
         }
@@ -111,8 +92,8 @@ util.inherit(Rect, Grid, {
             event.offsetX,
             event.offsetY
         );
-    },
-    getSquare: function getSquare(x, y) {
+    }
+    getSquare(x, y) {
         var s = this.state;
         var xOffset = this.getXOffset();
         var yOffset = this.getYOffset();
@@ -146,23 +127,23 @@ util.inherit(Rect, Grid, {
             this.screen.draw();
         }
         this.lastSquare = this.square;
-    },
-    getRows: function getRows() {
+    }
+    getRows() {
         return this.h() / this.state.size;
-    },
-    getCols: function getCols() {
+    }
+    getCols() {
         return this.w() / this.state.size;
-    },
-    getXOffset: function getOffset() {
+    }
+    getXOffset() {
         var cols = this.getCols();
         return Math.round(((this.w() / cols) * (cols % 1)) / 2);
-    },
-    getYOffset: function getYOffset() {
+    }
+    getYOffset() {
         var rows = this.getRows()
         return Math.round(((this.h() / rows) * (rows % 1)) / 2);
-    },
-    draw: function draw(page, cx) {
-        this.super(base.Base, 'draw', page, cx);
+    }
+    draw(page, cx) {
+        super(page, cx);
         var s = this.state;
         cx.strokeStyle = s.strokeStyle;
         cx.lineWidth = s.lineWidth;
@@ -213,5 +194,4 @@ util.inherit(Rect, Grid, {
             cx.stroke();
         }
     }
-});
-module.exports.Grid = Grid;
+}

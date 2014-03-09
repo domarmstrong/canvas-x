@@ -1,29 +1,27 @@
-var util = require('./util');
-module.exports = {};
+module util from './util';
 
-function Class(props) {
-    this.init.apply(this, arguments);
-}
-Class.prototype = {
-    init: function init(props) {
+export class Class {
+    constructor(props) {
+        this.init(props);
+    }
+    init(props) {
         this.props = props
         this.state = {};
         if (this.defaults) {
             util.extend(this.state, this.defaults);
         }
         util.extend(this.state, this.props);
-    },
-    super: function(superClass, method) {
+    }
+    super(superClass, method) {
         var args = Array.prototype.slice.call(arguments, 2);
         superClass.prototype[method].apply(this, args);
-    },
-    set: function set(obj) {
+    }
+    set(obj) {
         util.extend(this.state, obj);
         this.screen.draw();
         return this;
-    },
-    get: function get(prop) {
+    }
+    get(prop) {
         return this.state[prop];
     }
 };
-module.exports = Class;

@@ -1,23 +1,18 @@
-var util = require('../util');
-module.exports = {};
+var x = require('canvas-x');
 
-module.exports.children = function children(constructor) {
-    var proto = constructor.prototype;
-    util.extend(proto, {
-        drawChildren: function (page, cx) {
-            var widget;
-            for (var i = 0; i < this.children.length; i++) {
-                widget = this.children[i];
-                widget.screen = this;
-                widget.setBound(this).draw(page, cx);
-            }
+export var children = {
+    drawChildren: function (page, cx) {
+        var widget;
+        for (var i = 0; i < this.children.length; i++) {
+            widget = this.children[i];
+            widget.screen = this;
+            widget.setBound(this).draw(page, cx);
         }
-    });
+    }
 };
 
 var dragging = null;
-
-function events() {
+export function mouseEvents() {
     var dragCharge = 0,
         onDragStart = null,
         onDrag = null,
@@ -85,7 +80,3 @@ function events() {
         },
     };
 }
-module.exports.mouseEvents = function mouseEvents(constructor) {
-    var proto = constructor.prototype;
-    util.extend(proto, events());
-};

@@ -7,13 +7,27 @@ module.exports = function(grunt) {
 
         browserify: {
             options: {
-                debug: true
+                debug: true,
+                aliasMappings: {
+                    cwd: 'src',
+                    src: ['**/*.js']
+                }
             },
             dist: {
                 files: {
-                    'lib/main.js': ['lib/client/x.js']
+                    'lib/main.js': ['src/canvas-x.js']
                 }
             }
+        },
+        traceur: {
+            options: {
+                // traceur options here
+            },
+            custom: {
+                files:{
+                    'lib/main.js': ['src/canvas-x.js']
+                }
+            },
         },
 
         uglify: {
@@ -28,13 +42,14 @@ module.exports = function(grunt) {
 
         watch: {
             scripts: {
-                files: ['lib/**/*.js'],
+                files: ['src/**/*.js'],
                 tasks: ['default']
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-browserify');
+    //grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-traceur');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
@@ -44,13 +59,21 @@ module.exports = function(grunt) {
         if (testname) {
             grep = ' --grep ' + testname.replace(' ', '\\ ');
         }
-        exec('./node_modules/mocha/bin/mocha' + grep, null, function (error, stdout, stderr) {
+        exec('find test -name "*.js" | xargs ./node_modules/mocha/bin/mocha' + grep, function (error, stdout, stderr) {
             if (error) {
                 return done(error);
             }
             done( grunt.log.write(stdout) );
         });
     });
-    grunt.registerTask('default', ['browserify']);
-    grunt.registerTask('production', ['browserify', 'uglify']);
+    grunt.registerTask('default', function () {
+        var done = this.async();
+        exec('traceur --out lib/main.js src/canvas-x.js', function (error, stdout, stderr) {
+            if (error) {
+                return done(error);
+            }
+            done( grunt.log.write(stdout) );
+        });
+    });
+    grunt.registerTask('production', ['traceur', 'uglify']);
 };

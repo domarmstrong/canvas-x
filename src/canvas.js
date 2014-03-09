@@ -1,4 +1,4 @@
-function Canvas(id) {
+export function Canvas(id) {
     this.c = document.getElementById(id);
     this.cx = this.c.getContext('2d');
     this.events = {};
@@ -49,4 +49,3 @@ Canvas.prototype = {
         }
     }
 };
-module.exports = Canvas;

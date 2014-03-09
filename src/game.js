@@ -1,7 +1,7 @@
-var Mouse = require('./mouse');
-var Canvas = require('./canvas');
+import { Mouse } from './mouse';
+import { Canvas } from './canvas';
 
-function Game() {
+export function Game() {
     this.canvas = new Canvas('canvas');
     this.mouse = new Mouse();
     this.setupMouse();
@@ -26,4 +26,3 @@ Game.prototype = {
         this.screen.start(this.canvas);
     }
 };
-module.exports = Game;

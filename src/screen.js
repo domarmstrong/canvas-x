@@ -1,21 +1,18 @@
-var ui = require('./ui');
+module ui from './ui';
 
-function Screen(controls) {
-    this.init.apply(this, arguments);
-}
-Screen.prototype = {
-    init: function (controls) {
+export class Screen {
+    constructor(controls) {
         this.controls = controls;
         this._widgets = {};
-    },
-    start: function (canvas) {
+    }
+    start(canvas) {
         this.canvas = canvas;
         this.root = new ui.Bound({
             x: 0, y: 0, h: canvas.c.height, w: canvas.c.width
         }, this.controls);
         this.draw();
-    },
-    draw: function () {
+    }
+    draw() {
         var self = this;
         if (! self._suppress) {
             // Limit to 80 fps (seems to work best)
@@ -24,10 +21,8 @@ Screen.prototype = {
                 self._suppress = null;
             }, Math.floor(1000 / 80));
         }
-    },
-    getWidget: function (id) {
+    }
+    getWidget(id) {
         return this._widgets[id];
     }
-};
-
-module.exports = Screen;
+}

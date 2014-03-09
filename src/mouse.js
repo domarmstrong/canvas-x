@@ -1,4 +1,4 @@
-function Mouse() {
+export function Mouse() {
     this.screen;
     this.event;
 }
@@ -74,4 +74,3 @@ Mouse.prototype = {
         }
     }
 };
-module.exports = Mouse;
